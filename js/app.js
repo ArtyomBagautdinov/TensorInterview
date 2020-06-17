@@ -150,33 +150,88 @@ class Battlefield extends Component {
     }
 }
 
-class Unit extends Component {
-    constructor(state){
+class EnemyUnit extends Component {
+    constructor(props){
         super();
-        this.state = state;
+        this.x = props.x;
+        this.y = props.y;
+        this.checked = false;
     }
 
     render = () =>{
-        let unitContainer = document.createElement('div');
-        unitContainer.setAttribute('class','battlefield');
+        let square = document.createElement('div');
+        square.classList.add('square')
+        square.classList.add('empty');
+        let result = document.createElement('div');
+        result.append(square);
+
+        return result.innerHTML;
+    }
+
+    afterMount = () => {
+          if(!this.checked){
+            const battleBase = factory.create(BattleBase);
+            this.container.addEventListener('click', (event) => {
+                if(battleBase.getEnemyState(this.x,this.y)==0){
+                    this.container.classList.remove('empty');
+                    this.container.classList.add('checked');
+                    this.checked = true;
+                }
+                if(battleBase.getEnemyState(this.x,this.y)==1) {
+                    this.container.classList.remove('empty');
+                    this.container.classList.add('dead');
+                    battleBase.attackEnemy(this.x,this.y);
+                    this.checked = true;
+                }
+            });
+          }
+      
+    }
+
+}
+
+class PlayerUnit extends Component {
+    constructor(props){
+        super();
+        this.x = props.x;
+        this.y = props.y;
+        this.state = props.state;
+    }
+
+    render = () =>{
+        let square = document.createElement('div');
+        square.classList.add('square')
+        if(this.state==0) square.classList.add('empty');
+        if(this.state==1) square.classList.add('live');
+        if(this.state==-1) square.classList.add('dead');
+
+        let result = document.createElement('div');
+        result.append(square);
+
+        return result.innerHTML;
     }
 }
+
 class BattleBase {
     constructor(props){
         if(BattleBase.instance) return BattleBase.instance;
 
         BattleBase.instance = this;
-
-        this.playerName = props.playerName;  
+ 
         this.playerFieldState = [];
-
-        this.enemyName = props.enemyName;
+ 
         this.enemyFieldState = [];
 
-        this.fourdeck = 1;
-		this.tripledeck = 2;
-		this.doubledeck = 3;
-		this.singledeck = 4;
+        this.playerScore = 0;
+        this.enemyScore = 0;
+    }
+
+    getPlayerState(i,j){
+        return this.playerFieldState[i][j];
+    }
+
+    getEnemyState(i,j){
+        return this.enemyFieldState[i][j];
     }
 
     getRandom(bottomNum, topNum){
@@ -378,7 +433,7 @@ class BattleBase {
                         }
                         else edgeTwo=true;
 
-                        if(Math.abs(0-randX)+1 >= 4 && Math.abs(9-randY)+1 >= 2){
+                        if(Math.abs(0-randX)+1 >= 2 && Math.abs(9-randY)+1 >= 2){
                             if(currentField[randX-1][randY+1]==0){
                                 edgeThree=true;
                             }
@@ -452,13 +507,16 @@ class BattleBase {
     }
 
     initDoubleDeck(currentField){
+        let randX = this.getRandom(0,9);
+        let randY = this.getRandom(0,9);
+        let complete = false;
         for(let k=0;k<3;k++){
-            let complete = false;
+            complete = false;
+            
             while(!complete){
-
-                let randX = this.getRandom(0,9);
-                let randY = this.getRandom(0,9);
-
+                randX = this.getRandom(0,9);
+                randY = this.getRandom(0,9);
+        
                 if(Math.abs(9-randY)+1 >= 2){
                     if(currentField[randX][randY]==0 && currentField[randX][randY+1]==0){
                         let leftOne = false;
@@ -497,13 +555,13 @@ class BattleBase {
                         else edgeThree=true;
 
                         if(Math.abs(0-randX)+1 >= 2 && Math.abs(0-randY)+1 >= 2){
-                            if(currentField[randX-1][randY+2]==0){
+                            if(currentField[randX-1][randY-1]==0){
                                 edgeFour=true;
                             }
                         }
                         else edgeFour=true;
 
-                        if(Math.abs(0-randX)+1 > 1){
+                        if(Math.abs(0-randX)+1 >= 2){
                             if(currentField[randX-1][randY]==0 && currentField[randX-1][randY+1]==0){
                                 leftOne = true;
                                 leftTwo = true;
@@ -514,7 +572,7 @@ class BattleBase {
                             leftTwo = true; 
                         }
 
-                        if(Math.abs(9-randX)+1 > 1){
+                        if(Math.abs(9-randX)+1 >= 2){
                             if(currentField[randX+1][randY]==0 && currentField[randX+1][randY+1]==0){
                                 rightOne = true;
                                 rightTwo = true;
@@ -534,7 +592,7 @@ class BattleBase {
                             top=true;
                         }
 
-                        if(Math.abs(0-randY)+1 > 1){
+                        if(Math.abs(0-randY)+1 >= 2){
                             if(currentField[randX][randY-1]==0){
                                 bottom=true;
                             }
@@ -554,55 +612,53 @@ class BattleBase {
                 
                 
                 if(Math.abs(9-randX)+1 >= 3){
-                    if(currentField[randX][randY]==0 && currentField[randX+1][randY]==0 && currentField[randX+2][randY]==0){
+                    if(currentField[randX][randY]==0 && currentField[randX+1][randY]==0){
                         let topOne = false;
                         let topTwo = false;
-                        let topThree = false;
 
                         let bottomOne = false;
                         let bottomTwo = false;
-                        let bottomThree = false;
 
                         let left = false;
                         let right = false;
 
-
+                        
                         let edgeOne = false;
                         let edgeTwo = false;
                         let edgeThree = false;
                         let edgeFour = false;
 
                         if(Math.abs(9-randX)+1 >=4 && Math.abs(9-randY)+1 >= 2){
-                            if(currentField[randX+3][randY+1]==0){
+                            if(currentField[randX+2][randY+1]==0){
                                 edgeOne=true;
                             }
                         }
                         else edgeOne=true;
 
                         if(Math.abs(9-randX)+1 >=4 && Math.abs(0-randY)+1 >= 2){
-                            if(currentField[randX+3][randY-1]==0){
+                            if(currentField[randX+2][randY-1]==0){
                                 edgeTwo=true;
                             }
                         }
                         else edgeTwo=true;
 
-                        if(Math.abs(0-randX)+1 >= 4 && Math.abs(9-randY)+1 >= 2){
+                        if(Math.abs(0-randX)+1 >= 2 && Math.abs(9-randY)+1 >= 2){
                             if(currentField[randX-1][randY+1]==0){
                                 edgeThree=true;
                             }
                         }
                         else edgeThree=true;
 
-                        if(Math.abs(0-randX)+1 >= 4 && Math.abs(0-randY)+1 >= 2){
+                        if(Math.abs(0-randX)+1 >= 2 && Math.abs(0-randY)+1 >= 2){
                             if(currentField[randX-1][randY-1]==0){
                                 edgeFour=true;
                             }
                         }
                         else edgeFour=true;
 
-
+                        
                         if(Math.abs(9-randX)+1 >= 4){
-                            if(currentField[randX+3][randY]==0){
+                            if(currentField[randX+2][randY]==0){
                                 right = true;
                             }
                         }
@@ -620,37 +676,35 @@ class BattleBase {
                         }
 
                         if(Math.abs(9-randY)+1 >= 2){
-                            if(currentField[randX][randY+1]==0 && currentField[randX+1][randY+1]==0 && currentField[randX+2][randY+1]==0){
+                            if(currentField[randX][randY+1]==0 && currentField[randX+1][randY+1]==0){
                                 topOne = true;
                                 topTwo = true;
-                                topThree = true;
+                             
                             }
                         }
                         else{
                             topOne = true;
                             topTwo = true;
-                            topThree = true;
                         }
 
                         if(Math.abs(0-randY)+1 >= 2){
-                            if(currentField[randX][randY-1]==0 && currentField[randX+1][randY-1]==0 && currentField[randX+2][randY-1]==0){
+                            if(currentField[randX][randY-1]==0 && currentField[randX+1][randY-1]==0){
                                 bottomOne = true;
                                 bottomTwo = true;
-                                bottomThree = true;
                             }
                         }
                         else{
                             bottomOne = true;
                             bottomTwo = true;
-                            bottomThree = true;
                         }
 
-                        if(topOne && topTwo && topThree && left && right && bottomOne && bottomTwo && bottomThree && edgeOne && edgeTwo && edgeThree && edgeFour){
+                        if(topOne && topTwo && left && right && bottomOne && bottomTwo && edgeOne && edgeTwo && edgeThree && edgeFour ){
                             currentField[randX][randY]=1;
                             currentField[randX+1][randY]=1;
                             complete = true;
                         }
                     }
+                    
                 }
                 
                 
@@ -686,8 +740,8 @@ class BattleBase {
     fieldsStateInit(){
         this.fieldsInit();
         this.initFourDeck(this.playerFieldState);
-        this.initTripleDeck(this.playerFieldState);
         this.initDoubleDeck(this.playerFieldState);
+        this.initTripleDeck(this.playerFieldState);
         this.initSingDeck(this.playerFieldState);
 
         this.initFourDeck(this.enemyFieldState);
@@ -714,7 +768,18 @@ class BattleBase {
         }
     }
 
+    attackEnemy(i,j){
+        if(this.enemyFieldState[i][j]==1) {
+            this.playerScore++;
+            this.enemyFieldState[i][j]=-1;
+            console.log(this.playerScore);
+        }
+        if(this.playerScore==20) alert("You win!");
+    }
+
 }
+
+
 
 
 const root = document.getElementById('root');
@@ -725,13 +790,30 @@ const battlefield = factory.create(Battlefield);
 
 battlefield.mount(root,'afterbegin');
 
-const battleBase = factory.create(
-    BattleBase,
-    {
-        playerName : "Артем",
-        enemyName : "A.W.E.S.O.M-О"
-    });
+const battleBase = factory.create(BattleBase);
 
 
 battleBase.fieldsStateInit();
 battleBase.showPlayerState();
+
+for(let i=0; i<10; i++){
+    for(let j=0; j<10; j++){
+        const playerUnit = factory.create(
+            PlayerUnit,
+            {
+                state : battleBase.getPlayerState(i,j),
+                x : i,
+                y : j
+            }
+            );
+        const enemyUnit = factory.create(
+            EnemyUnit,
+            {   
+                x : i,
+                y : j
+            }
+            );
+        playerUnit.mount(document.getElementsByClassName('battlefield__player')[0]);
+        enemyUnit.mount(document.getElementsByClassName('battlefield__enemy')[0]);
+    }
+}
