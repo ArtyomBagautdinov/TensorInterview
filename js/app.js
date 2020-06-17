@@ -181,6 +181,9 @@ class EnemyUnit extends Component {
                     this.container.classList.remove('empty');
                     this.container.classList.add('dead');
                     battleBase.attackEnemy(this.x,this.y);
+                    let randX = this.getRandom(0,9);
+                    let randY = this.getRandom(0,9);
+                  //  while(!battleBase.attackPlayer(randX,randY)) тут остановился доделать !
                     this.checked = true;
                 }
             });
@@ -772,9 +775,18 @@ class BattleBase {
         if(this.enemyFieldState[i][j]==1) {
             this.playerScore++;
             this.enemyFieldState[i][j]=-1;
-            console.log(this.playerScore);
+            console.log("PlayerScore " + this.playerScore);
         }
         if(this.playerScore==20) alert("You win!");
+    }
+
+    attackPlayer(i,j){
+        if(this.playerFieldState[i][j]==1) {
+            this.enemyScore++;
+            this.playerFieldState[i][j]=-1;
+            console.log("EnemyScore : "+ this.enemyScore);
+        }
+        if(this.enemyScore==20) alert("You lose!");
     }
 
 }
