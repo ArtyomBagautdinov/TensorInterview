@@ -126,8 +126,20 @@ class Component{
 
 class Battlefield extends Component {
     render = () =>{
+        const battleBase = factory.create(BattleBase);
+
         let battlefield = document.createElement('div');
         battlefield.setAttribute('class','battlefield');
+
+        let runningContainer = document.createElement('div');
+        runningContainer.setAttribute('class','running__container');
+
+        let runningInfo = document.createElement('div');
+        runningInfo.setAttribute('class','running__info');
+
+        runningInfo.innerHTML = "Сейчас ваш ход";
+
+        runningContainer.append(runningInfo);
 
         let battlefieldContainer = document.createElement('div');
         battlefieldContainer.setAttribute('class','battlefield__container')
@@ -138,10 +150,40 @@ class Battlefield extends Component {
         let battlefieldPlayer = document.createElement('div');
         battlefieldPlayer.setAttribute('class','battlefield__player')
 
-        battlefieldContainer.append(battlefieldEnemy);
-        battlefieldContainer.append(battlefieldPlayer);
+        let enemyContainer= document.createElement('div');
+        enemyContainer.setAttribute('class','enemy__container')
+
+        let enemyStatus = document.createElement('div');
+        enemyStatus.setAttribute('class','enemy__status');
+
+        let enemyScore = document.createElement('div');
+        enemyScore.setAttribute('class','enemy__score');
+        enemyScore.innerHTML = "Счёт игрока "+battleBase.getEnemyName()+": "+ battleBase.getEnemyScore();
+
+        let playerContainer = document.createElement('div');
+        playerContainer.setAttribute('class','player__container')
+
+        let playerStatus = document.createElement('div');
+        playerStatus.setAttribute('class','player__status');
+
+        let playerScore = document.createElement('div');
+        playerScore.setAttribute('class','player__score');
+        
+        playerScore.innerHTML = "Счёт игрока "+ battleBase.getPlayerName()+ ": " + battleBase.getPlayerScore();;
+
+        enemyStatus.append(enemyScore);
+        enemyContainer.append(battlefieldEnemy);
+        enemyContainer.append(enemyStatus);
+
+        playerStatus.append(playerScore);
+        playerContainer.append(battlefieldPlayer);
+        playerContainer.append(playerStatus);
+
+        battlefieldContainer.append(enemyContainer);
+        battlefieldContainer.append(playerContainer);
 
         battlefield.append(battlefieldContainer);
+        battlefield.append(runningContainer);
 
         let result = document.createElement('div');
         result.append(battlefield);
@@ -176,15 +218,32 @@ class EnemyUnit extends Component {
                     this.container.classList.remove('empty');
                     this.container.classList.add('checked');
                     this.checked = true;
+
+
+                    let randX = battleBase.getRandom(0,9);
+                    let randY = battleBase.getRandom(0,9);
+                    document.getElementsByClassName('player__score')[0].innerHTML = "Счёт игрока "+ battleBase.getPlayerName()+ ": " + battleBase.getPlayerScore();
+                    
+                    while(battleBase.attackPlayer(randX,randY)==2){
+                        randX = battleBase.getRandom(0,9);
+                        randY = battleBase.getRandom(0,9);
+                    }
+
                 }
                 if(battleBase.getEnemyState(this.x,this.y)==1) {
+        
                     this.container.classList.remove('empty');
                     this.container.classList.add('dead');
                     battleBase.attackEnemy(this.x,this.y);
-                    let randX = this.getRandom(0,9);
-                    let randY = this.getRandom(0,9);
-                  //  while(!battleBase.attackPlayer(randX,randY)) тут остановился доделать !
+                    document.getElementsByClassName('player__score')[0].innerHTML = "Счёт игрока "+ battleBase.getPlayerName()+ ": " + battleBase.getPlayerScore();
                     this.checked = true;
+        
+                    let randX = battleBase.getRandom(0,9);
+                    let randY = battleBase.getRandom(0,9);
+                    while(battleBase.attackPlayer(randX,randY)==2){
+                        randX = battleBase.getRandom(0,9);
+                        randY = battleBase.getRandom(0,9);
+                    }
                 }
             });
           }
@@ -202,15 +261,15 @@ class PlayerUnit extends Component {
     }
 
     render = () =>{
+        const battleBase = factory.create(BattleBase);
+
         let square = document.createElement('div');
         square.classList.add('square')
-        if(this.state==0) square.classList.add('empty');
-        if(this.state==1) square.classList.add('live');
-        if(this.state==-1) square.classList.add('dead');
+        square.setAttribute('id',this.x.toString()+'_'+this.y.toString());
 
+        if(battleBase.getPlayerState(this.x,this.y)==1) square.classList.add('live');
         let result = document.createElement('div');
         result.append(square);
-
         return result.innerHTML;
     }
 }
@@ -225,8 +284,35 @@ class BattleBase {
  
         this.enemyFieldState = [];
 
+        this.enemyChecked = [];
+
         this.playerScore = 0;
         this.enemyScore = 0;
+    }
+
+    setPlayerName(pN){
+        this.playerName = pN;
+    }
+
+    setEnemyName(eN){
+        this.enemyName = eN;
+    }
+
+
+    getPlayerName(){
+        return this.playerName;
+    }
+
+    getEnemyName(){
+        return this.enemyName;
+    }
+
+    getPlayerScore(){
+        return this.playerScore;
+    }
+
+    getEnemyScore(){
+        return this.enemyScore;
     }
 
     getPlayerState(i,j){
@@ -245,9 +331,11 @@ class BattleBase {
         for(let i=0; i<10; i++){
             this.playerFieldState[i] = [];
             this.enemyFieldState[i] = [];
+            this.enemyChecked[i] = [];
             for(let j=0; j<10; j++){
                 this.playerFieldState[i].push(0);
                 this.enemyFieldState[i].push(0);
+                this.enemyChecked[i].push(0);
             }
         }
     }
@@ -775,34 +863,59 @@ class BattleBase {
         if(this.enemyFieldState[i][j]==1) {
             this.playerScore++;
             this.enemyFieldState[i][j]=-1;
-            console.log("PlayerScore " + this.playerScore);
         }
-        if(this.playerScore==20) alert("You win!");
+        alert("Ход компьютера!")
     }
 
     attackPlayer(i,j){
-        if(this.playerFieldState[i][j]==1) {
-            this.enemyScore++;
-            this.playerFieldState[i][j]=-1;
-            console.log("EnemyScore : "+ this.enemyScore);
+        if(this.enemyChecked[i][j]==0){
+                if(this.playerFieldState[i][j]==1) {
+                    this.enemyScore++;
+                    this.playerFieldState[i][j]=-1;  
+                    this.enemyChecked[i][j]=1;
+                    let p = document.createElement('p');
+                    p.setAttribute('class','red');
+                    p.innerHTML = 'X';
+                    document.getElementById(i.toString() + '_'+j.toString()).append(p);
+                    document.getElementsByClassName('enemy__score')[0].innerHTML = "Счёт игрока "+battleBase.getEnemyName()+": "+ battleBase.getEnemyScore();
+                    alert("Ваш ход!")
+                    return -1; 
+                }
+                if(this.playerFieldState[i][j]==0){
+                    this.enemyChecked[i][j]=1;
+                    let div = document.createElement('div');
+                    div.setAttribute('class','point');
+                    document.getElementById(i.toString() + '_'+j.toString()).append(div);
+                    alert("Ваш ход!")
+                    return 0; 
+                }
+            
         }
-        if(this.enemyScore==20) alert("You lose!");
+        else return 2;
     }
 
 }
 
+const factory = new ComponentFactory();
+
+let namePlayer = prompt ("Придумайте своё имя");
+
+let nameEnemy = prompt ("Придумайте имя компьютеру");
+
+const battleBase = factory.create(BattleBase);
 
 
+battleBase.setEnemyName(nameEnemy);
+
+battleBase.setPlayerName(namePlayer);
 
 const root = document.getElementById('root');
 
-const factory = new ComponentFactory();
+
 
 const battlefield = factory.create(Battlefield);
 
 battlefield.mount(root,'afterbegin');
-
-const battleBase = factory.create(BattleBase);
 
 
 battleBase.fieldsStateInit();
@@ -829,3 +942,5 @@ for(let i=0; i<10; i++){
         enemyUnit.mount(document.getElementsByClassName('battlefield__enemy')[0]);
     }
 }
+
+alert("Сейчас ваш ход")
