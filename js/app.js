@@ -144,16 +144,6 @@ class Battlefield extends Component {
         let battlefield = document.createElement('div');
         battlefield.setAttribute('class','battlefield');
 
-        let runningContainer = document.createElement('div');
-        runningContainer.setAttribute('class','running__container');
-
-        let runningInfo = document.createElement('div');
-        runningInfo.setAttribute('class','running__info');
-
-        runningInfo.innerHTML = "Сейчас ваш ход";
-
-        runningContainer.append(runningInfo);
-
         let battlefieldContainer = document.createElement('div');
         battlefieldContainer.setAttribute('class','battlefield__container')
         
@@ -171,7 +161,10 @@ class Battlefield extends Component {
 
         let enemyScore = document.createElement('div');
         enemyScore.setAttribute('class','enemy__score');
-        enemyScore.innerHTML = "Счёт игрока "+battleBase.getEnemyName()+": "+ battleBase.getEnemyScore();
+        let enemyP = document.createElement('p');
+        enemyP.setAttribute('class','enemy__score-text');
+
+        enemyP.innerHTML =  "Счёт игрока "+battleBase.getEnemyName()+": "+ battleBase.getEnemyScore();
 
         let playerContainer = document.createElement('div');
         playerContainer.setAttribute('class','player__container')
@@ -181,13 +174,17 @@ class Battlefield extends Component {
 
         let playerScore = document.createElement('div');
         playerScore.setAttribute('class','player__score');
-        
-        playerScore.innerHTML = "Счёт игрока "+ battleBase.getPlayerName()+ ": " + battleBase.getPlayerScore();;
+        let playerP = document.createElement('p');
+        playerP.setAttribute('class','player__score-text');
 
+        playerP.innerHTML = "Счёт игрока "+ battleBase.getPlayerName()+ ": " + battleBase.getPlayerScore();;
+
+        enemyScore.append(enemyP);
         enemyStatus.append(enemyScore);
         enemyContainer.append(battlefieldEnemy);
         enemyContainer.append(enemyStatus);
-
+        
+        playerScore.append(playerP);
         playerStatus.append(playerScore);
         playerContainer.append(battlefieldPlayer);
         playerContainer.append(playerStatus);
@@ -196,7 +193,6 @@ class Battlefield extends Component {
         battlefieldContainer.append(playerContainer);
 
         battlefield.append(battlefieldContainer);
-        battlefield.append(runningContainer);
 
         let result = document.createElement('div');
         result.append(battlefield);
@@ -205,6 +201,9 @@ class Battlefield extends Component {
     }
 }
 
+/**
+* Компонент клетки компьютера
+*/
 class EnemyUnit extends Component {
     constructor(props){
         super();
@@ -212,7 +211,7 @@ class EnemyUnit extends Component {
         this.y = props.y;
         this.checked = false;
     }
-
+    
     render = () =>{
         let square = document.createElement('div');
         square.classList.add('square')
@@ -222,7 +221,9 @@ class EnemyUnit extends Component {
 
         return result.innerHTML;
     }
-
+    /**
+    * Обрабатываем нажатие на клетку
+    */
     afterMount = () => {
          
             const battleBase = factory.create(BattleBase);
@@ -233,7 +234,7 @@ class EnemyUnit extends Component {
                     
                     let randX = battleBase.getRandom(0,9);
                     let randY = battleBase.getRandom(0,9);
-                    document.getElementsByClassName('player__score')[0].innerHTML = "Счёт игрока "+ battleBase.getPlayerName()+ ": " + battleBase.getPlayerScore();
+                    document.getElementsByClassName('player__score-text')[0].innerHTML = "Счёт игрока "+ battleBase.getPlayerName()+ ": " + battleBase.getPlayerScore();
                     
                     while(battleBase.attackPlayer(randX,randY)==2){
                         randX = battleBase.getRandom(0,9);
@@ -249,7 +250,7 @@ class EnemyUnit extends Component {
                     p.innerHTML = 'X';
                     this.container.append(p);
                     battleBase.attackEnemy(this.x,this.y);
-                    document.getElementsByClassName('player__score')[0].innerHTML = "Счёт игрока "+ battleBase.getPlayerName()+ ": " + battleBase.getPlayerScore();
+                    document.getElementsByClassName('player__score-text')[0].innerHTML = "Счёт игрока "+ battleBase.getPlayerName()+ ": " + battleBase.getPlayerScore();
         
                     let randX = battleBase.getRandom(0,9);
                     let randY = battleBase.getRandom(0,9);
@@ -272,6 +273,9 @@ class EnemyUnit extends Component {
 
 }
 
+/**
+* Компонент клетки игрока
+*/
 class PlayerUnit extends Component {
     constructor(props){
         super();
@@ -294,6 +298,11 @@ class PlayerUnit extends Component {
     }
 }
 
+/**
+* Класс базы данных со всей информацией о состоянии игры
+* Реализован как Singleton
+*/
+
 class BattleBase {
     constructor(props){
         if(BattleBase.instance) return BattleBase.instance;
@@ -310,6 +319,8 @@ class BattleBase {
         this.enemyScore = 0;
     }
 
+    // Записать имена компьютера и игрока
+
     setPlayerName(pN){
         this.playerName = pN;
     }
@@ -318,7 +329,7 @@ class BattleBase {
         this.enemyName = eN;
     }
 
-
+    // Полуить значения из базы
     getPlayerName(){
         return this.playerName;
     }
@@ -343,10 +354,18 @@ class BattleBase {
         return this.enemyFieldState[i][j];
     }
 
+    /**
+    * Получить случайное число в диапазоне 
+    * @param bottomNum нижнее значение
+    * @param topNum нижнее значение
+    */
     getRandom(bottomNum, topNum){
         return Math.floor(Math.random() * (topNum - (bottomNum - 1))) + bottomNum;
     }
 
+    /**
+    * Проинициализировать карты соперников и массив памяти компьютера (запоминает куда он уже стрелял)
+    */
     fieldsInit(){
         for(let i=0; i<10; i++){
             this.playerFieldState[i] = [];
@@ -360,6 +379,9 @@ class BattleBase {
         }
     }
 
+    /**
+     * Инициализация случайного положения четырехпалубного корабля
+    */
     initFourDeck(currentField){
         let randX = this.getRandom(0,9);
         let randY = this.getRandom(0,9);
@@ -401,6 +423,9 @@ class BattleBase {
         }
 
     }
+    /**
+     * Инициализация случайного положения трёхпалубных кораблей
+     */
 
     initTripleDeck(currentField){
         for(let k=0;k<2;k++){
@@ -617,6 +642,9 @@ class BattleBase {
         }
     }
 
+    /**
+     * Инициализация случайного положения двухпалубных кораблей
+     */
     initDoubleDeck(currentField){
         let randX = this.getRandom(0,9);
         let randY = this.getRandom(0,9);
@@ -822,7 +850,9 @@ class BattleBase {
             }
         }
     }
-
+    /**
+     * Инициализация случайного положения однопалубных кораблей
+     */
     initSingDeck(currentField){
         for(let i=0;i<4;i++){
             let flag = true;
@@ -847,7 +877,9 @@ class BattleBase {
             
         }
     }
-
+    /**
+     * Инициализация карты
+     */
     fieldsStateInit(){
         this.fieldsInit();
         this.initFourDeck(this.playerFieldState);
@@ -861,6 +893,9 @@ class BattleBase {
         this.initSingDeck(this.enemyFieldState);
     }
 
+    /**
+     * Показать состояние карты игрока
+     */
     showPlayerState(){
         for(let i = 0 ;i < 10;i++){
             console.log(this.playerFieldState[0][i],this.playerFieldState[1][i],this.playerFieldState[2][i],
@@ -870,6 +905,9 @@ class BattleBase {
         }
     }
 
+    /**
+     * Показать состояние карты компьютера
+     */
     showEnemyState(){
         for(let i = 0 ;i < 10;i++){
             console.log(this.enemyFieldState[i][0],this.enemyFieldState[i][1],this.enemyFieldState[i][2],
@@ -879,6 +917,9 @@ class BattleBase {
         }
     }
 
+    /**
+     * Метод атаки на компьютер
+     */
     attackEnemy(i,j){
         if(this.enemyFieldState[i][j]==1) {
             this.playerScore++;
@@ -896,9 +937,12 @@ class BattleBase {
         
     }
 
+    /**
+     * Метод атаки на игрока
+     */
     attackPlayer(i,j){
-        if(this.enemyChecked[i][j]==0){
-               alert("Вы сделали выстрел, теперь ход компьютера по имени: " + this.enemyName + "!");
+        if(this.enemyChecked[i][j]==0){    
+                if(this.playerScore!=20) alert("Вы сделали выстрел, теперь ход компьютера: " + this.enemyName + "!");
                 if(this.playerFieldState[i][j]==1) {
                     this.enemyScore++;
                     this.playerFieldState[i][j]=-1;  
@@ -907,7 +951,7 @@ class BattleBase {
                     p.setAttribute('class','red');
                     p.innerHTML = 'X';
                     document.getElementById(i.toString() + '_'+j.toString()).append(p);
-                    document.getElementsByClassName('enemy__score')[0].innerHTML = "Счёт игрока "+battleBase.getEnemyName()+": "+ battleBase.getEnemyScore();
+                    document.getElementsByClassName('enemy__score-text')[0].innerHTML = "Счёт игрока "+battleBase.getEnemyName()+": "+ battleBase.getEnemyScore();
                     if(this.enemyScore==20) {
                         alert("Компьютер победил!");
                         let isRestart = confirm("Хотите начать заново?");
@@ -915,14 +959,9 @@ class BattleBase {
                         else window.close();
                     }
                     sleep(500);
-                    alert("Ход игрока: "+ this.playerName +"!");
+                    if(this.playerScore!=20 && this.enemyScore!=20) alert("Ход игрока: "+ this.playerName +"!");
                     return -1;
-                    /*
-                    setTimeout(() => { 
-                        alert("Ход игрока: "+ this.playerName +"!");
-                        return -1;
-                    }, 70);
-                    */
+                    
                 }
                 if(this.playerFieldState[i][j]==0){
                     this.enemyChecked[i][j]=1;
@@ -937,15 +976,8 @@ class BattleBase {
 
                     }
                     sleep(500);
-                    alert("Ход игрока: "+ this.playerName +"!");
-                    return -1;
-                    /*
-                    setTimeout(() => { 
-                        alert("Ход игрока: "+ this.playerName +"!");
-                        return -1;
-                    }, 70);
-                    */
-                    
+                    if(this.playerScore!=20 && this.enemyScore!=20) alert("Ход игрока: "+ this.playerName +"!");
+                    return -1; 
                 }
                 
             
@@ -968,22 +1000,28 @@ if(nameEnemy==null || nameEnemy=="") nameEnemy="Кибер попугай";
 const battleBase = factory.create(BattleBase);
 
 
+//записываем имена в базу данных
+     
 battleBase.setEnemyName(nameEnemy);
 
 battleBase.setPlayerName(namePlayer);
 
+// получить корневой элемент 
 const root = document.getElementById('root');
 
 
 
 const battlefield = factory.create(Battlefield);
 
+
+// монтируем в корневой элемент наш компонент battlefield
 battlefield.mount(root,'afterbegin');
 
-
+// инициализируем начальное состояние игры
 battleBase.fieldsStateInit();
-battleBase.showPlayerState();
 
+
+//монтируем компоненты единиц поля игры в соответствии с состоянием базы данных
 for(let i=0; i<10; i++){
     for(let j=0; j<10; j++){
         const playerUnit = factory.create(
@@ -1006,4 +1044,5 @@ for(let i=0; i<10; i++){
     }
 }
 
-alert("Сейчас ваш ход")
+// Обьявляем начало игры
+alert("Игра началась! Вы ходите первым.");
