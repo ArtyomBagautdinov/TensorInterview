@@ -1,4 +1,17 @@
 
+
+/**
+ * Функция ожидания
+*/
+
+function sleep(milliseconds) {
+    const date = Date.now();
+    let currentDate = null;
+    do {
+      currentDate = Date.now();
+    } while (currentDate - date < milliseconds);
+}
+
 /**
  * Фабрика компонентов
 */
@@ -885,7 +898,7 @@ class BattleBase {
 
     attackPlayer(i,j){
         if(this.enemyChecked[i][j]==0){
-               // alert("Ход компьютера!")
+               alert("Вы сделали выстрел, теперь ход компьютера по имени: " + this.enemyName + "!");
                 if(this.playerFieldState[i][j]==1) {
                     this.enemyScore++;
                     this.playerFieldState[i][j]=-1;  
@@ -901,10 +914,15 @@ class BattleBase {
                         if(isRestart)  window.location.reload();
                         else window.close();
                     }
+                    sleep(500);
+                    alert("Ход игрока: "+ this.playerName +"!");
+                    return -1;
+                    /*
                     setTimeout(() => { 
-                       // alert("Ваш ход!")
+                        alert("Ход игрока: "+ this.playerName +"!");
                         return -1;
                     }, 70);
+                    */
                 }
                 if(this.playerFieldState[i][j]==0){
                     this.enemyChecked[i][j]=1;
@@ -918,10 +936,15 @@ class BattleBase {
                         else window.close();
 
                     }
+                    sleep(500);
+                    alert("Ход игрока: "+ this.playerName +"!");
+                    return -1;
+                    /*
                     setTimeout(() => { 
-                        //alert("Ваш ход!")
+                        alert("Ход игрока: "+ this.playerName +"!");
                         return -1;
                     }, 70);
+                    */
                     
                 }
                 
@@ -937,6 +960,10 @@ const factory = new ComponentFactory();
 let namePlayer = prompt ("Придумайте своё имя");
 
 let nameEnemy = prompt ("Придумайте имя компьютеру");
+
+if(namePlayer==null || namePlayer=="") namePlayer="Морской волк";
+
+if(nameEnemy==null || nameEnemy=="") nameEnemy="Кибер попугай";
 
 const battleBase = factory.create(BattleBase);
 
