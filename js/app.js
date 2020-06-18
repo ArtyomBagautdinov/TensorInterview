@@ -230,7 +230,11 @@ class EnemyUnit extends Component {
                 else if(battleBase.getEnemyState(this.x,this.y)==1) {
         
                     this.container.classList.remove('empty');
-                    this.container.classList.add('dead');
+                    this.container.classList.add('live');
+                    let p = document.createElement('p');
+                    p.setAttribute('class','red');
+                    p.innerHTML = 'X';
+                    this.container.append(p);
                     battleBase.attackEnemy(this.x,this.y);
                     document.getElementsByClassName('player__score')[0].innerHTML = "Счёт игрока "+ battleBase.getPlayerName()+ ": " + battleBase.getPlayerScore();
         
@@ -242,10 +246,10 @@ class EnemyUnit extends Component {
                     }
                     
                 }else if(battleBase.getEnemyState(this.x,this.y)==-1) {
-                    alert("Вы уже стреляли в этот корабль!")                   
+                    alert("Вы уже стреляли в эту палубу!")                   
                 }
                 else if(battleBase.getEnemyState(this.x,this.y)==-2){
-                    alert("Вы уже стреляли в этот корабль!")  
+                    alert("Вы уже стреляли сюда!")  
                 }
                 
             });
@@ -870,6 +874,7 @@ class BattleBase {
                 alert("Вы победили !");
                 let isRestart = confirm("Хотите начать заново?");
                 if(isRestart)  window.location.reload()
+                else window.close();
             }
         }
         if(this.enemyFieldState[i][j]==0) {
@@ -893,7 +898,8 @@ class BattleBase {
                     if(this.enemyScore==20) {
                         alert("Компьютер победил!");
                         let isRestart = confirm("Хотите начать заново?");
-                        if(isRestart)  window.location.reload()
+                        if(isRestart)  window.location.reload();
+                        else window.close();
                     }
                     setTimeout(() => { 
                        // alert("Ваш ход!")
@@ -908,7 +914,9 @@ class BattleBase {
                     if(this.enemyScore==20) {
                         alert("Компьютер победил!");
                         let isRestart = confirm("Хотите начать заново?");
-                        if(isRestart)  window.location.reload()
+                        if(isRestart)  window.location.reload();
+                        else window.close();
+
                     }
                     setTimeout(() => { 
                         //alert("Ваш ход!")
