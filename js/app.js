@@ -211,15 +211,13 @@ class EnemyUnit extends Component {
     }
 
     afterMount = () => {
-          if(!this.checked){
+         
             const battleBase = factory.create(BattleBase);
             this.container.addEventListener('click', (event) => {
                 if(battleBase.getEnemyState(this.x,this.y)==0){
                     this.container.classList.remove('empty');
                     this.container.classList.add('checked');
-                    this.checked = true;
-
-
+                    
                     let randX = battleBase.getRandom(0,9);
                     let randY = battleBase.getRandom(0,9);
                     document.getElementsByClassName('player__score')[0].innerHTML = "Счёт игрока "+ battleBase.getPlayerName()+ ": " + battleBase.getPlayerScore();
@@ -227,16 +225,14 @@ class EnemyUnit extends Component {
                     while(battleBase.attackPlayer(randX,randY)==2){
                         randX = battleBase.getRandom(0,9);
                         randY = battleBase.getRandom(0,9);
-                    }
-
+                    } 
                 }
-                if(battleBase.getEnemyState(this.x,this.y)==1) {
+                else if(battleBase.getEnemyState(this.x,this.y)==1) {
         
                     this.container.classList.remove('empty');
                     this.container.classList.add('dead');
                     battleBase.attackEnemy(this.x,this.y);
                     document.getElementsByClassName('player__score')[0].innerHTML = "Счёт игрока "+ battleBase.getPlayerName()+ ": " + battleBase.getPlayerScore();
-                    this.checked = true;
         
                     let randX = battleBase.getRandom(0,9);
                     let randY = battleBase.getRandom(0,9);
@@ -244,9 +240,16 @@ class EnemyUnit extends Component {
                         randX = battleBase.getRandom(0,9);
                         randY = battleBase.getRandom(0,9);
                     }
+                    
+                }else if(battleBase.getEnemyState(this.x,this.y)==-1) {
+                    alert("Вы уже стреляли в этот корабль!")                   
                 }
+                else if(battleBase.getEnemyState(this.x,this.y)==-2){
+                    alert("Вы уже стреляли в этот корабль!")  
+                }
+                
             });
-          }
+          
       
     }
 
@@ -863,12 +866,21 @@ class BattleBase {
         if(this.enemyFieldState[i][j]==1) {
             this.playerScore++;
             this.enemyFieldState[i][j]=-1;
+            if(this.playerScore==20){
+                alert("Вы победили !");
+                let isRestart = confirm("Хотите начать заново?");
+                if(isRestart)  window.location.reload()
+            }
         }
-        alert("Ход компьютера!")
+        if(this.enemyFieldState[i][j]==0) {
+            this.enemyFieldState[i][j]=-2;
+        }
+        
     }
 
     attackPlayer(i,j){
         if(this.enemyChecked[i][j]==0){
+               // alert("Ход компьютера!")
                 if(this.playerFieldState[i][j]==1) {
                     this.enemyScore++;
                     this.playerFieldState[i][j]=-1;  
@@ -878,17 +890,33 @@ class BattleBase {
                     p.innerHTML = 'X';
                     document.getElementById(i.toString() + '_'+j.toString()).append(p);
                     document.getElementsByClassName('enemy__score')[0].innerHTML = "Счёт игрока "+battleBase.getEnemyName()+": "+ battleBase.getEnemyScore();
-                    alert("Ваш ход!")
-                    return -1; 
+                    if(this.enemyScore==20) {
+                        alert("Компьютер победил!");
+                        let isRestart = confirm("Хотите начать заново?");
+                        if(isRestart)  window.location.reload()
+                    }
+                    setTimeout(() => { 
+                       // alert("Ваш ход!")
+                        return -1;
+                    }, 70);
                 }
                 if(this.playerFieldState[i][j]==0){
                     this.enemyChecked[i][j]=1;
                     let div = document.createElement('div');
                     div.setAttribute('class','point');
                     document.getElementById(i.toString() + '_'+j.toString()).append(div);
-                    alert("Ваш ход!")
-                    return 0; 
+                    if(this.enemyScore==20) {
+                        alert("Компьютер победил!");
+                        let isRestart = confirm("Хотите начать заново?");
+                        if(isRestart)  window.location.reload()
+                    }
+                    setTimeout(() => { 
+                        //alert("Ваш ход!")
+                        return -1;
+                    }, 70);
+                    
                 }
+                
             
         }
         else return 2;
