@@ -1,0 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&family=Roboto:wght@500&display=swap');
+
+.header__container{
+    margin-top: 30px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;   
+}
+
+.header__title{
+    font-family: "Roboto";
+    font-size: 70px;
+    font-weight: 500;
+}
