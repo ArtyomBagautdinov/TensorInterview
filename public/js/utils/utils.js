@@ -5,7 +5,7 @@
 * @param topNum нижнее значение
 */
 
-export function getRandom(bottomNum, topNum){
+export function getRandom(bottomNum, topNum) {
     return Math.floor(Math.random() * (topNum - (bottomNum - 1))) + bottomNum;
 }
 
