@@ -10,7 +10,7 @@ export class Memory {
 
         Memory.instance = this;
         this.units = [];
-        this.array = [7,8,1,2,3,9,10,4,5,6];
+        this.array = [1,8,5,6,7,3,9,4,10,2];
     }
 
     /**

@@ -37,6 +37,9 @@ export class Unit extends Component {
         return result.innerHTML;
     }
 
+    /**
+    * Изменить состояние unit (высота бара и значение)
+    */
     changeValue = (newValue) => {
         this.value = newValue;
         let height = 'height: ' + (this.value * 20).toString() + 'px';

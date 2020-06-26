@@ -1,24 +1,8 @@
 import { Component } from '../component.js'
 import { Memory } from '../../memory.js';
 import { ComponentFactory } from '../../factory.js';
+import {getRandom,sleep} from '../../utils/utils.js';
 
-/**
-* Получить случайное число в диапазоне 
-* @param bottomNum нижнее значение
-* @param topNum нижнее значение
-*/
-
-function getRandom(bottomNum, topNum){
-    return Math.floor(Math.random() * (topNum - (bottomNum - 1))) + bottomNum;
-}
-
-/**
-* Функция задержки времени  
-* @param ms миллисекунды
-*/
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 /**
 * Функция сортировки пузырьком
