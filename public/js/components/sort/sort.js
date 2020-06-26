@@ -93,13 +93,9 @@ export class Sort extends Component {
         buttonShuffle.setAttribute('class', 'buttons__shuffle');
         buttonShuffle.innerHTML = 'Shuffle';
 
-        let buttonBinTree = document.createElement('div');
-        buttonBinTree.setAttribute('class', 'buttons__bin-tree-sort');
-        buttonBinTree.innerHTML = 'Binary Tree Sort';
-
         sortButtons.append(buttonBubbleSort);
         sortButtons.append(buttonShuffle);
-        sortButtons.append(buttonBinTree);
+     
 
         sortContainer.append(sortChart);
         sortContainer.append(sortButtons);
@@ -119,8 +115,6 @@ export class Sort extends Component {
         const shuffleButton = document.getElementsByClassName('buttons__shuffle')[0];
         shuffleButton.addEventListener('click', () => shuffle());
 
-        const binTreeButton = document.getElementsByClassName('buttons__bin-tree-sort')[0];
-        binTreeButton.addEventListener('click', () => bubbleSort());
     }
 
 }
