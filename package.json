@@ -1,0 +1,22 @@
+{
+  "name": "tensorinterview",
+  "version": "1.0.0",
+  "description": "\"Case two\"",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ArtyomBagautdinov/TensorInterview.git"
+  },
+  "author": "Artyom Bagautdinov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ArtyomBagautdinov/TensorInterview/issues"
+  },
+  "homepage": "https://github.com/ArtyomBagautdinov/TensorInterview#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
