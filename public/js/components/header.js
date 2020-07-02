@@ -1,7 +1,9 @@
 import { Component } from './component.js'
+
 /**
  * Компонент хедера страницы
  */
+
 export class Header extends Component {
     render = (props) => {
         let result = document.createElement('div');

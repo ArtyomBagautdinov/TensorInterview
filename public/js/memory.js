@@ -1,6 +1,6 @@
 
 /**
- * Cинглтон класс Memory, хранящий в себе обьекты класса Unit вместе с основными методами манипулирования DOM
+ * Cинглтон класс Memory, хранящий в себе состояние игры в крестики нолики
  */
 
 export class Memory {
@@ -9,90 +9,215 @@ export class Memory {
             return Memory.instance;
 
         Memory.instance = this;
-        this.units = [];
-        this.array = [1,8,5,6,7,3,9,4,10,2];
+
+        this.playerScore = 0;
+        this.playerState = 'x';
+
+        this.computerScore = 0;
+        this.computerState = 'o';
+
+        this.party = 1;
+
+        this.field = [
+            ['.', '.', '.'],
+            ['.', '.', '.'],
+            ['.', '.', '.']
+        ];
+    }   
+
+    /**
+    * Получить текущую партию игры
+    */
+    getParty = () => {
+        return this.party;
     }
 
     /**
-    * Получить массив 
+    * Увеличить счётчик партии на 1
     */
-    getArray = () => {
-        return this.array;
+    nextParty = () => {
+        this.party++;
     }
 
     /**
-    * Заполнить массив элементами
+    * Проверить заполнены ли все клетки на поле
     */
-    setArray = (arr) => {
-        let i = 0;
-        arr.forEach(val => {
-            this.array[i] = val;
-            i++;
-        });
+    isFull = () => {
+        for (let i = 0; i < 3; i++)
+            for (let j = 0; j < 3; j++)
+                if(this.field[i][j]=='.') {
+                    return false;
+                }
+        
+        return true;
     }
 
     /**
-    * Очистить массив
+    * Получить массив поля
     */
-    clearArray = (arr) => {
-        this.array = [];
+    getField = () => {
+        return this.field;
     }
 
     /**
-    * поменять элементы в массиве местами
+    * Получить значение клетки
     */
-    swapElements = (x,y) => {
-        let tmp = this.array[y];
-        this.array[y] = this.array[x];
-        this.array[x] = tmp;
+    getSquare = (i, j) => {
+        return this.field[i][j];
     }
 
     /**
-    * Вставить элемент в массив
-    * @param elem элемент массива
+    * Записать значение в клетку поля
     */
-    pushElement = (elem) => {
-        this.array.push(elem);
+    setState = (i, j, value) => {
+        this.field[i][j] = value;
     }
 
     /**
-    * Добавить все units в DOM
+    * Проверить смог ли победить компьютер или игрок в партии 
     */
-    mountAll = (container, position) => {
-        this.units.forEach((unit) => {
-            unit.mount(container, position)
-        })
+    checkWinner = () => {
+        if (this.field[0][0] == this.playerState &&
+            this.field[0][1] == this.playerState &&
+            this.field[0][2] == this.playerState) {
+            this.playerScore++;
+            return true;
+        }
+
+        else if (this.field[1][0] == this.playerState &&
+            this.field[1][1] == this.playerState &&
+            this.field[1][2] == this.playerState) {
+            this.playerScore++;
+            return true;
+        }
+
+        else if (this.field[2][0] == this.playerState &&
+            this.field[2][1] == this.playerState &&
+            this.field[2][2] == this.playerState) {
+            this.playerScore++;
+            return true;
+        }
+
+        else if (this.field[0][0] == this.playerState &&
+            this.field[1][0] == this.playerState &&
+            this.field[2][0] == this.playerState) {
+            this.playerScore++;
+            return true;
+        }
+
+        else if (this.field[0][1] == this.playerState &&
+            this.field[1][1] == this.playerState &&
+            this.field[2][1] == this.playerState) {
+            this.playerScore++;
+            return true;
+        }
+
+        else if (this.field[0][2] == this.playerState &&
+            this.field[1][2] == this.playerState &&
+            this.field[2][2] == this.playerState) {
+            this.playerScore++;
+            return true;
+        }
+
+        else if (this.field[0][0] == this.playerState &&
+            this.field[1][1] == this.playerState &&
+            this.field[2][2] == this.playerState) {
+            this.playerScore++;
+            return true;
+        }
+
+        else if (this.field[0][2] == this.playerState &&
+            this.field[1][1] == this.playerState &&
+            this.field[2][0] == this.playerState) {
+            this.playerScore++;
+            return true;
+        }
+
+        ///////////////////////////////////////////////////
+
+        else if (this.field[0][0] == this.computerState &&
+            this.field[0][1] == this.computerState &&
+            this.field[0][2] == this.computerState) {
+            this.computerScore++;
+            return true;
+        }
+
+        else if (this.field[1][0] == this.computerState &&
+            this.field[1][1] == this.computerState &&
+            this.field[1][2] == this.computerState) {
+            this.computerScore++;
+            return true;
+        }
+
+        else if (this.field[2][0] == this.computerState &&
+            this.field[2][1] == this.computerState &&
+            this.field[2][2] == this.computerState) {
+            this.computerScore++;
+            return true;
+        }
+
+        else if (this.field[0][0] == this.computerState &&
+            this.field[1][0] == this.computerState &&
+            this.field[2][0] == this.computerState) {
+            this.computerScore++;
+            return true;
+        }
+
+        else if (this.field[0][1] == this.computerState &&
+            this.field[1][1] == this.computerState &&
+            this.field[2][1] == this.computerState) {
+            this.computerScore++;
+            return true;
+        }
+
+        else if (this.field[0][2] == this.computerState &&
+            this.field[1][2] == this.computerState &&
+            this.field[2][2] == this.computerState) {
+            this.computerScore++;
+            return true;
+        }
+        else if (this.field[0][0] == this.computerState &&
+            this.field[1][1] == this.computerState &&
+            this.field[2][2] == this.computerState) {
+            this.computerScore++;
+            return true;
+        }
+
+        else if (this.field[0][2] == this.computerState &&
+            this.field[1][1] == this.computerState &&
+            this.field[2][0] == this.computerState) {
+            this.computerScore++;
+            return true;
+        }
+        else
+            return false;
+
     }
 
     /**
-    * Удалить все units из DOM
+    * Зачистить поле
     */
-    unmountAll = () => {
-        this.units.forEach((unit) => {
-            unit.unmount()
-        })
-    }
-
-
-    /**
-    * Добавить unit в дом
-    */
-    addUnit = (component) => {
-        this.units.push(component);
+    clearField = () => {
+        this.field = [
+            ['.', '.', '.'],
+            ['.', '.', '.'],
+            ['.', '.', '.']
+        ];
     }
 
     /**
-    * Получить unit по id
+    * Получить счёт игрока
     */
-    getUnit = (id) => {
-        return this.units[id];
+    getPlayerScore = () => {
+        return this.playerScore;
     }
 
     /**
-    * Получить кол-во units
+    * Получить счёт компьютера
     */
-    getLength = () => {
-        return this.units.length;
+    getComputerScore = () => {
+        return this.computerScore;
     }
+
 
 }

@@ -1,21 +1,13 @@
 {
-  "name": "tensorinterview",
+  "name": "tictactoe",
   "version": "1.0.0",
-  "description": "\"Case two\"",
+  "description": "\"Задание №3 Tensor\"",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ArtyomBagautdinov/TensorInterview.git"
-  },
-  "author": "Artyom Bagautdinov",
+  "author": "ArtyomBagautdinov",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/ArtyomBagautdinov/TensorInterview/issues"
-  },
-  "homepage": "https://github.com/ArtyomBagautdinov/TensorInterview#readme",
   "dependencies": {
     "express": "^4.17.1"
   }
